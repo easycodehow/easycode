@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="게시판 페이지">
+    <title>게시판 - EasyCode</title>
+
+    <!-- Fonts -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/navigation.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+    <link rel="stylesheet" href="styles/board.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">EasyCode</a>
+
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="page1.html" class="nav-link">메뉴1</a>
+                </li>
+                <li class="nav-item">
+                    <a href="page2.html" class="nav-link">메뉴2</a>
+                </li>
+                <li class="nav-item">
+                    <a href="page3.html" class="nav-link">메뉴3</a>
+                </li>
+                <li class="nav-item">
+                    <a href="page4.html" class="nav-link">메뉴4</a>
+                </li>
+                <li class="nav-item">
+                    <a href="board.html" class="nav-link active">게시판</a>
+                </li>
+            </ul>
+
+            <a href="login.html" class="nav-login" title="로그인">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="default-padding">
+        <div class="container">
+            <!-- Board Header -->
+            <section class="board-header">
+                <h1 class="board-title">게시글 목록</h1>
+                <div class="board-actions">
+                    <select class="board-select">
+                        <option value="title">제목</option>
+                        <option value="content">내용</option>
+                        <option value="author">작성자</option>
+                    </select>
+                    <input type="text" class="board-search" placeholder="검색어를 입력하세요">
+                    <button class="btn-board btn-board-secondary">조회</button>
+                    <button class="btn-board btn-board-primary" id="writeBtn">등록</button>
+                </div>
+            </section>
+
+            <!-- Board Table -->
+            <section class="board-section">
+                <table class="board-table">
+                    <thead>
+                        <tr>
+                            <th class="col-number">번호</th>
+                            <th class="col-title">제목</th>
+                            <th class="col-author">등록자</th>
+                            <th class="col-date">등록일</th>
+                            <th class="col-views">조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="board-row">
+                            <td class="col-number">1</td>
+                            <td class="col-title">
+                                <a href="board-detail.html" class="board-link">파일첨부</a>
+                            </td>
+                            <td class="col-author">테스트1</td>
+                            <td class="col-date">2016-12-08</td>
+                            <td class="col-views">0</td>
+                        </tr>
+                        <tr class="board-row">
+                            <td class="col-number">2</td>
+                            <td class="col-title">
+                                <a href="board-detail.html" class="board-link">블로그형 게시판</a>
+                            </td>
+                            <td class="col-author">테스트1</td>
+                            <td class="col-date">2016-12-08</td>
+                            <td class="col-views">1</td>
+                        </tr>
+                        <tr class="board-row">
+                            <td class="col-number">3</td>
+                            <td class="col-title">
+                                <a href="board-detail.html" class="board-link">전자정부 표준프레임워크 공통컴포넌트 VERSION 3.6</a>
+                            </td>
+                            <td class="col-author">테스트1</td>
+                            <td class="col-date">2016-12-08</td>
+                            <td class="col-views">1</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="board-pagination">
+                    <button class="page-btn active">1</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="scripts/navigation.js"></script>
+    <script src="scripts/main.js"></script>
+    <script>
+        // 현재는 기능이 없는 UI만 제공
+        document.getElementById('writeBtn').addEventListener('click', function() {
+            alert('글쓰기 기능은 추후 Supabase 연동 후 구현 예정입니다.');
+        });
+    </script>
+</body>
+</html>
