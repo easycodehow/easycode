@@ -111,16 +111,16 @@ project/
 
 #### 클로드코드가 정리한 이후 작업 내용
   직접 작업 필요 (Supabase 대시보드):
-  - [] posts 테이블 생성
-  - [] comments 테이블 생성
-  - [] Storage 버킷 생성
-  - [] RLS(Row Level Security) 정책 설정
+  - [x] posts 테이블 생성
+  - [x] comments 테이블 생성
+  - [x] Storage 버킷 생성
+  - [x] RLS(Row Level Security) 정책 설정
 
   클로드코드 자동 처리:
-  - [] JavaScript 코드 작성
-  - [] Supabase 클라이언트 연동
-  - [] UI 기능 구현
-  - [] 에러 처리
+  - [x] JavaScript 코드 작성
+  - [x] Supabase 클라이언트 연동
+  - [x] UI 기능 구현
+  - [x] 에러 처리
 
 ## 로그인
 
