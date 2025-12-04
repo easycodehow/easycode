@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="styles/navigation.css">
     <link rel="stylesheet" href="styles/responsive.css">
     <link rel="stylesheet" href="styles/board.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -127,12 +130,19 @@
     </main>
 
     <!-- JavaScript -->
+    <script src="scripts/supabase.js"></script>
     <script src="scripts/navigation.js"></script>
     <script src="scripts/main.js"></script>
     <script>
-        // 현재는 기능이 없는 UI만 제공
-        document.getElementById('writeBtn').addEventListener('click', function() {
-            alert('글쓰기 기능은 추후 Supabase 연동 후 구현 예정입니다.');
+        // 글쓰기 버튼 - 로그인 체크
+        document.getElementById('writeBtn').addEventListener('click', async function() {
+            const user = await getCurrentUser();
+            if (!user) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+            } else {
+                alert('글쓰기 기능은 추후 구현 예정입니다.');
+            }
         });
     </script>
 </body>
