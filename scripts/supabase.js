@@ -7,7 +7,15 @@ const SUPABASE_URL = 'https://ulfcehbqnazkktktxtfc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZmNlaGJxbmF6a2t0a3R4dGZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NTY0NTcsImV4cCI6MjA4MDMzMjQ1N30.8Vv7gta-RxrmW0Fgl8S9iGDvFQNVSLOUHVwq4J-yaYM';
 
 // Supabase 클라이언트 생성
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// sessionStorage 사용: 브라우저/탭을 닫으면 자동 로그아웃
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    storage: window.sessionStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
 
 // 현재 로그인한 사용자 정보 가져오기
 async function getCurrentUser() {
