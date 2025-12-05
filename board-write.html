@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="게시판 페이지">
-    <title>게시판 - EasyCode</title>
+    <meta name="description" content="게시글 작성">
+    <title>게시글 작성 - EasyCode</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
@@ -63,46 +63,25 @@
     <!-- Main Content -->
     <main class="default-padding">
         <div class="container">
-            <!-- Board Header -->
-            <section class="board-header">
-                <h1 class="board-title">게시글 목록</h1>
-                <div class="board-actions">
-                    <select class="board-select">
-                        <option value="title">제목</option>
-                        <option value="content">내용</option>
-                        <option value="author">작성자</option>
-                    </select>
-                    <input type="text" class="board-search" placeholder="검색어를 입력하세요">
-                    <button class="btn-board btn-board-secondary">조회</button>
-                    <button class="btn-board btn-board-primary" id="writeBtn">등록</button>
-                </div>
-            </section>
+            <section class="board-write-section">
+                <h1 class="board-title">게시글 작성</h1>
 
-            <!-- Board Table -->
-            <section class="board-section">
-                <table class="board-table">
-                    <thead>
-                        <tr>
-                            <th class="col-number">번호</th>
-                            <th class="col-title">제목</th>
-                            <th class="col-author">등록자</th>
-                            <th class="col-date">등록일</th>
-                            <th class="col-views">조회수</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 40px;">
-                                게시글을 불러오는 중...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <form id="writeForm" class="board-form">
+                    <div class="form-group">
+                        <label for="title">제목</label>
+                        <input type="text" id="title" name="title" class="form-input" placeholder="제목을 입력하세요" required>
+                    </div>
 
-                <!-- Pagination -->
-                <div class="board-pagination">
-                    <button class="page-btn active">1</button>
-                </div>
+                    <div class="form-group">
+                        <label for="content">내용</label>
+                        <textarea id="content" name="content" class="form-textarea" rows="15" placeholder="내용을 입력하세요" required></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-board btn-board-secondary" onclick="history.back()">취소</button>
+                        <button type="submit" class="btn-board btn-board-primary">등록</button>
+                    </div>
+                </form>
             </section>
         </div>
     </main>
@@ -111,16 +90,56 @@
     <script src="scripts/supabase.js"></script>
     <script src="scripts/navigation.js"></script>
     <script src="scripts/main.js"></script>
-    <script src="scripts/board.js"></script>
     <script>
-        // 글쓰기 버튼 - 로그인 체크
-        document.getElementById('writeBtn').addEventListener('click', async function() {
+        // 페이지 로드 시 로그인 확인
+        document.addEventListener('DOMContentLoaded', async () => {
             const user = await getCurrentUser();
             if (!user) {
                 alert('로그인이 필요합니다.');
                 window.location.href = 'login.html';
-            } else {
-                window.location.href = 'board-write.html';
+            }
+        });
+
+        // 게시글 작성
+        document.getElementById('writeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const user = await getCurrentUser();
+            if (!user) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+
+            if (!title || !content) {
+                alert('제목과 내용을 모두 입력해주세요.');
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('posts')
+                    .insert([
+                        {
+                            title: title,
+                            content: content,
+                            author_id: user.id,
+                            author_email: user.email,
+                            views: 0
+                        }
+                    ])
+                    .select();
+
+                if (error) throw error;
+
+                alert('게시글이 등록되었습니다.');
+                window.location.href = 'board.html';
+            } catch (error) {
+                console.error('게시글 작성 실패:', error.message);
+                alert('게시글 작성에 실패했습니다: ' + error.message);
             }
         });
     </script>

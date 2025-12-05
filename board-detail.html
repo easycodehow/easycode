@@ -70,53 +70,50 @@
 
             <!-- Detail Content -->
             <section class="detail-section">
-                <!-- Info Table -->
-                <table class="detail-info-table">
-                    <colgroup>
-                        <col style="width: 15%;">
-                        <col style="width: 35%;">
-                        <col style="width: 15%;">
-                        <col style="width: 35%;">
-                    </colgroup>
-                    <tbody>
-                        <tr>
-                            <th>제목</th>
-                            <td colspan="3">전자정부 표준프레임워크 공통컴포넌트 VERSION 3.6</td>
-                        </tr>
-                        <tr>
-                            <th>등록자</th>
-                            <td>테스트1</td>
-                            <th>등록일</th>
-                            <td>2016-12-08</td>
-                        </tr>
-                        <tr>
-                            <th>조회수</th>
-                            <td colspan="3">2</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div id="loadingMessage" style="text-align: center; padding: 40px;">
+                    게시글을 불러오는 중...
+                </div>
 
-                <!-- Content Box -->
-                <div class="detail-content-box">
-                    <h3 class="content-label">내용</h3>
-                    <div class="content-text">
-                        <p><strong>전자정부 표준프레임워크 공통컴포넌트 VERSION 3.6</strong></p>
+                <div id="postContent" style="display: none;">
+                    <!-- Info Table -->
+                    <table class="detail-info-table">
+                        <colgroup>
+                            <col style="width: 15%;">
+                            <col style="width: 35%;">
+                            <col style="width: 15%;">
+                            <col style="width: 35%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>제목</th>
+                                <td colspan="3" id="postTitle"></td>
+                            </tr>
+                            <tr>
+                                <th>등록자</th>
+                                <td id="postAuthor"></td>
+                                <th>등록일</th>
+                                <td id="postDate"></td>
+                            </tr>
+                            <tr>
+                                <th>조회수</th>
+                                <td colspan="3" id="postViews"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Content Box -->
+                    <div class="detail-content-box">
+                        <h3 class="content-label">내용</h3>
+                        <div class="content-text" id="postContentText"></div>
                     </div>
-                </div>
 
-                <!-- Period Info -->
-                <div class="detail-period">
-                    <span class="period-label">게시기간</span>
-                    <span class="period-text">2016-12-08 ~ 2017-01-08</span>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="detail-actions">
-                    <button class="btn-detail btn-detail-primary" id="editBtn">수정</button>
-                    <button class="btn-detail btn-detail-primary" id="deleteBtn">삭제</button>
-                    <button class="btn-detail btn-detail-primary" id="replyBtn">답글</button>
-                    <button class="btn-detail btn-detail-secondary" onclick="location.href='board.html'">목록</button>
-                    <button class="btn-detail btn-detail-primary" id="scrollBtn">스크롤</button>
+                    <!-- Action Buttons -->
+                    <div class="detail-actions">
+                        <button class="btn-detail btn-detail-primary" id="editBtn" style="display: none;">수정</button>
+                        <button class="btn-detail btn-detail-primary" id="deleteBtn" style="display: none;">삭제</button>
+                        <button class="btn-detail btn-detail-secondary" onclick="location.href='board.html'">목록</button>
+                        <button class="btn-detail btn-detail-primary" id="scrollBtn">스크롤</button>
+                    </div>
                 </div>
             </section>
         </div>
@@ -127,18 +124,121 @@
     <script src="scripts/navigation.js"></script>
     <script src="scripts/main.js"></script>
     <script>
-        // 현재는 기능이 없는 UI만 제공
+        let currentPost = null;
+
+        // URL에서 게시글 ID 가져오기
+        function getPostIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // 날짜 포맷 (YYYY-MM-DD)
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // HTML 이스케이프 (XSS 방지)
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 게시글 불러오기
+        async function loadPost() {
+            const postId = getPostIdFromURL();
+            if (!postId) {
+                alert('잘못된 접근입니다.');
+                window.location.href = 'board.html';
+                return;
+            }
+
+            try {
+                // 게시글 조회
+                const { data: post, error } = await supabase
+                    .from('posts')
+                    .select('*')
+                    .eq('id', postId)
+                    .single();
+
+                if (error) throw error;
+
+                if (!post) {
+                    alert('존재하지 않는 게시글입니다.');
+                    window.location.href = 'board.html';
+                    return;
+                }
+
+                currentPost = post;
+
+                // 조회수 증가
+                await supabase
+                    .from('posts')
+                    .update({ views: (post.views || 0) + 1 })
+                    .eq('id', postId);
+
+                // 화면에 표시
+                document.getElementById('postTitle').textContent = post.title;
+                document.getElementById('postAuthor').textContent = post.author_email.split('@')[0];
+                document.getElementById('postDate').textContent = formatDate(post.created_at);
+                document.getElementById('postViews').textContent = (post.views || 0) + 1;
+                document.getElementById('postContentText').innerHTML = escapeHtml(post.content).replace(/\n/g, '<br>');
+
+                // 로딩 메시지 숨기고 내용 표시
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('postContent').style.display = 'block';
+
+                // 본인 글인지 확인하여 수정/삭제 버튼 표시
+                const user = await getCurrentUser();
+                if (user && user.id === post.author_id) {
+                    document.getElementById('editBtn').style.display = 'inline-block';
+                    document.getElementById('deleteBtn').style.display = 'inline-block';
+                }
+            } catch (error) {
+                console.error('게시글 조회 실패:', error.message);
+                alert('게시글을 불러오는데 실패했습니다.');
+                window.location.href = 'board.html';
+            }
+        }
+
+        // 게시글 삭제
+        async function deletePost() {
+            if (!currentPost) return;
+
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('posts')
+                    .delete()
+                    .eq('id', currentPost.id);
+
+                if (error) throw error;
+
+                alert('게시글이 삭제되었습니다.');
+                window.location.href = 'board.html';
+            } catch (error) {
+                console.error('게시글 삭제 실패:', error.message);
+                alert('게시글 삭제에 실패했습니다: ' + error.message);
+            }
+        }
+
+        // 이벤트 리스너
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPost();
+        });
+
         document.getElementById('editBtn').addEventListener('click', function() {
-            alert('수정 기능은 추후 Supabase 연동 후 구현 예정입니다.');
+            if (currentPost) {
+                window.location.href = `board-edit.html?id=${currentPost.id}`;
+            }
         });
 
-        document.getElementById('deleteBtn').addEventListener('click', function() {
-            alert('삭제 기능은 추후 Supabase 연동 후 구현 예정입니다.');
-        });
-
-        document.getElementById('replyBtn').addEventListener('click', function() {
-            alert('답글 기능은 추후 Supabase 연동 후 구현 예정입니다.');
-        });
+        document.getElementById('deleteBtn').addEventListener('click', deletePost);
 
         document.getElementById('scrollBtn').addEventListener('click', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
