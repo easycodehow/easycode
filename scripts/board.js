@@ -38,7 +38,7 @@ function displayPosts(posts) {
             <td class="col-title">
                 <a href="board-detail.html?id=${post.id}" class="board-link">${escapeHtml(post.title)}</a>
             </td>
-            <td class="col-author">${escapeHtml(post.author_email.split('@')[0])}</td>
+            <td class="col-author">작성자</td>
             <td class="col-date">${formatDate(post.created_at)}</td>
             <td class="col-views">${post.views || 0}</td>
         </tr>
