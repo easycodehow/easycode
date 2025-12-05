@@ -461,6 +461,9 @@
 /* Write Section */
 .board-write-section {
     margin-top: 100px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .board-write-section .board-title {
