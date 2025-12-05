@@ -104,6 +104,7 @@
                     <!-- Content Box -->
                     <div class="detail-content-box">
                         <h3 class="content-label">내용</h3>
+                        <div id="postImage" class="post-image-container"></div>
                         <div class="content-text" id="postContentText"></div>
                     </div>
 
@@ -180,6 +181,15 @@
                 document.getElementById('postAuthor').textContent = '작성자';
                 document.getElementById('postDate').textContent = formatDate(post.created_at);
                 document.getElementById('postViews').textContent = '0';
+
+                // 이미지 표시
+                const postImageDiv = document.getElementById('postImage');
+                if (post.image_url) {
+                    postImageDiv.innerHTML = `<img src="${post.image_url}" alt="게시글 이미지" class="post-detail-image">`;
+                } else {
+                    postImageDiv.innerHTML = '';
+                }
+
                 document.getElementById('postContentText').innerHTML = escapeHtml(post.content).replace(/\n/g, '<br>');
 
                 // 로딩 메시지 숨기고 내용 표시
@@ -199,6 +209,20 @@
             }
         }
 
+        // Storage에서 이미지 경로 추출
+        function getImagePathFromUrl(url) {
+            if (!url) return null;
+            try {
+                const urlObj = new URL(url);
+                const pathname = urlObj.pathname;
+                const match = pathname.match(/\/storage\/v1\/object\/public\/post-images\/(.+)$/);
+                return match ? match[1] : null;
+            } catch (error) {
+                console.error('URL 파싱 실패:', error);
+                return null;
+            }
+        }
+
         // 게시글 삭제
         async function deletePost() {
             if (!currentPost) return;
@@ -206,6 +230,21 @@
             if (!confirm('정말 삭제하시겠습니까?')) return;
 
             try {
+                // 이미지가 있으면 먼저 삭제
+                if (currentPost.image_url) {
+                    const imagePath = getImagePathFromUrl(currentPost.image_url);
+                    if (imagePath) {
+                        const { error: storageError } = await supabase.storage
+                            .from('post-images')
+                            .remove([imagePath]);
+
+                        if (storageError) {
+                            console.error('이미지 삭제 실패:', storageError.message);
+                        }
+                    }
+                }
+
+                // 게시글 삭제
                 const { error } = await supabase
                     .from('posts')
                     .delete()

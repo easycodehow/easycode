@@ -418,3 +418,55 @@ a:hover {
 .p-2 { padding: 1rem; }
 .p-3 { padding: 1.5rem; }
 .p-4 { padding: 2rem; }
+
+/* 이미지 업로드 관련 스타일 */
+.form-file-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-body);
+  cursor: pointer;
+  background-color: var(--white);
+}
+
+.form-file-input:hover {
+  border-color: var(--primary-green);
+}
+
+.form-file-input:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(184, 197, 160, 0.1);
+}
+
+.file-info {
+  margin-top: 5px;
+  font-size: var(--font-size-body-sm);
+  color: var(--gray-700);
+}
+
+.image-preview {
+  margin-top: 10px;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.post-image-container {
+  margin-bottom: 20px;
+}
+
+.post-detail-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  display: block;
+  margin: 0 auto;
+}
