@@ -175,17 +175,11 @@
 
                 currentPost = post;
 
-                // 조회수 증가
-                await supabase
-                    .from('posts')
-                    .update({ views: (post.views || 0) + 1 })
-                    .eq('id', postId);
-
                 // 화면에 표시
                 document.getElementById('postTitle').textContent = post.title;
                 document.getElementById('postAuthor').textContent = '작성자';
                 document.getElementById('postDate').textContent = formatDate(post.created_at);
-                document.getElementById('postViews').textContent = (post.views || 0) + 1;
+                document.getElementById('postViews').textContent = '0';
                 document.getElementById('postContentText').innerHTML = escapeHtml(post.content).replace(/\n/g, '<br>');
 
                 // 로딩 메시지 숨기고 내용 표시

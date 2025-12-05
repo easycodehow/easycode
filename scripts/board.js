@@ -40,7 +40,7 @@ function displayPosts(posts) {
             </td>
             <td class="col-author">작성자</td>
             <td class="col-date">${formatDate(post.created_at)}</td>
-            <td class="col-views">${post.views || 0}</td>
+            <td class="col-views">0</td>
         </tr>
     `).join('');
 }
