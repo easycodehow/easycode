@@ -455,3 +455,115 @@
         font-size: 12px;
     }
 }
+
+/* ========== Board Write/Edit Page Styles ========== */
+
+/* Write Section */
+.board-write-section {
+    margin-top: 100px;
+}
+
+.board-write-section .board-title {
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--gray-900);
+    margin-bottom: 0;
+}
+
+/* Write Form Table Style (matching detail page) */
+.board-form-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--gray-200);
+    margin-bottom: 0;
+}
+
+.board-form-table th {
+    background-color: #F2F2F2;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-900);
+    border: 1px solid var(--gray-200);
+    width: 15%;
+}
+
+.board-form-table td {
+    padding: 12px 16px;
+    font-size: var(--font-size-body-sm);
+    color: var(--gray-900);
+    border: 1px solid var(--gray-200);
+}
+
+/* Form Inputs */
+.form-input-table {
+    width: 100%;
+    border: none;
+    padding: 8px;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-body-sm);
+    color: var(--gray-900);
+    background-color: transparent;
+}
+
+.form-input-table:focus {
+    outline: none;
+}
+
+/* Textarea in table */
+.form-textarea-table {
+    width: 100%;
+    min-height: 400px;
+    border: none;
+    padding: 8px;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-body-sm);
+    color: var(--gray-900);
+    background-color: transparent;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.form-textarea-table:focus {
+    outline: none;
+}
+
+/* Form Actions */
+.form-actions-write {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 0;
+}
+
+/* Responsive for Write Page */
+@media (max-width: 768px) {
+    .board-form-table th {
+        width: 20%;
+        padding: 10px 12px;
+    }
+
+    .board-form-table td {
+        padding: 10px 12px;
+    }
+
+    .form-textarea-table {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .board-write-section .board-title {
+        font-size: var(--font-size-h5);
+    }
+
+    .board-form-table th,
+    .board-form-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .form-textarea-table {
+        min-height: 250px;
+    }
+}
