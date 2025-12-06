@@ -108,6 +108,38 @@
                         <div class="content-text" id="postContentText"></div>
                     </div>
 
+                    <!-- 댓글 섹션 -->
+                    <div class="comments-section">
+                        <h3 class="comments-title">댓글 <span id="commentCount">0</span></h3>
+
+                        <!-- 댓글 작성 폼 (로그인한 사용자만) -->
+                        <div id="commentFormSection" style="display: none;">
+                            <div class="comment-form">
+                                <textarea
+                                    id="commentContent"
+                                    class="comment-textarea"
+                                    placeholder="댓글을 입력하세요"
+                                    rows="3"
+                                ></textarea>
+                                <button class="btn-detail btn-detail-primary" id="submitCommentBtn">댓글 작성</button>
+                            </div>
+                        </div>
+
+                        <!-- 로그인 안내 (비로그인 사용자) -->
+                        <div id="commentLoginNotice" style="display: none;">
+                            <p style="text-align: center; color: var(--text-light); padding: 20px;">
+                                댓글을 작성하려면 <a href="login.html" style="color: var(--primary-color);">로그인</a>이 필요합니다.
+                            </p>
+                        </div>
+
+                        <!-- 댓글 목록 -->
+                        <div id="commentsList">
+                            <p style="text-align: center; color: var(--text-light); padding: 20px;">
+                                댓글을 불러오는 중...
+                            </p>
+                        </div>
+                    </div>
+
                     <!-- Action Buttons -->
                     <div class="detail-actions">
                         <button class="btn-detail btn-detail-primary" id="editBtn" style="display: none;">수정</button>
@@ -275,6 +307,158 @@
 
         document.getElementById('scrollBtn').addEventListener('click', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ========== 댓글 기능 ==========
+
+        let currentUser = null;
+
+        // 댓글 목록 불러오기
+        async function loadComments() {
+            const postId = getPostIdFromURL();
+            if (!postId) return;
+
+            try {
+                const { data: comments, error } = await supabase
+                    .from('comments')
+                    .select('*')
+                    .eq('post_id', postId)
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                renderComments(comments || []);
+            } catch (error) {
+                console.error('댓글 조회 실패:', error.message);
+                document.getElementById('commentsList').innerHTML =
+                    '<p style="text-align: center; color: var(--gray-400); padding: 20px;">댓글을 불러오는데 실패했습니다.</p>';
+            }
+        }
+
+        // 댓글 렌더링
+        function renderComments(comments) {
+            const commentsList = document.getElementById('commentsList');
+            const commentCount = document.getElementById('commentCount');
+
+            // 댓글 개수 업데이트
+            commentCount.textContent = comments.length;
+
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<div class="no-comments">첫 댓글을 작성해보세요!</div>';
+                return;
+            }
+
+            let html = '';
+            comments.forEach(comment => {
+                const isAuthor = currentUser && currentUser.id === comment.user_id;
+                const commentDate = formatDate(comment.created_at);
+
+                html += `
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">익명</span>
+                            <span class="comment-date">${commentDate}</span>
+                        </div>
+                        <div class="comment-content">${escapeHtml(comment.content)}</div>
+                        ${isAuthor ? `
+                            <div class="comment-actions">
+                                <button class="comment-delete-btn" onclick="deleteComment(${comment.id})">삭제</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            commentsList.innerHTML = html;
+        }
+
+        // 댓글 작성
+        async function createComment() {
+            const postId = getPostIdFromURL();
+            const content = document.getElementById('commentContent').value.trim();
+
+            if (!content) {
+                alert('댓글 내용을 입력해주세요.');
+                return;
+            }
+
+            if (!currentUser) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('comments')
+                    .insert([
+                        {
+                            post_id: postId,
+                            user_id: currentUser.id,
+                            content: content
+                        }
+                    ])
+                    .select();
+
+                if (error) throw error;
+
+                // 입력창 초기화
+                document.getElementById('commentContent').value = '';
+
+                // 댓글 목록 새로고침
+                await loadComments();
+
+                alert('댓글이 작성되었습니다.');
+            } catch (error) {
+                console.error('댓글 작성 실패:', error.message);
+                alert('댓글 작성에 실패했습니다: ' + error.message);
+            }
+        }
+
+        // 댓글 삭제
+        async function deleteComment(commentId) {
+            if (!confirm('댓글을 삭제하시겠습니까?')) return;
+
+            try {
+                const { error } = await supabase
+                    .from('comments')
+                    .delete()
+                    .eq('id', commentId);
+
+                if (error) throw error;
+
+                // 댓글 목록 새로고침
+                await loadComments();
+
+                alert('댓글이 삭제되었습니다.');
+            } catch (error) {
+                console.error('댓글 삭제 실패:', error.message);
+                alert('댓글 삭제에 실패했습니다: ' + error.message);
+            }
+        }
+
+        // 로그인 체크 및 댓글 폼 표시
+        async function checkLoginAndShowCommentForm() {
+            currentUser = await getCurrentUser();
+
+            if (currentUser) {
+                // 로그인한 경우 - 댓글 작성 폼 표시
+                document.getElementById('commentFormSection').style.display = 'block';
+                document.getElementById('commentLoginNotice').style.display = 'none';
+            } else {
+                // 로그인 안 한 경우 - 로그인 안내 표시
+                document.getElementById('commentFormSection').style.display = 'none';
+                document.getElementById('commentLoginNotice').style.display = 'block';
+            }
+        }
+
+        // 댓글 작성 버튼 이벤트
+        document.getElementById('submitCommentBtn').addEventListener('click', createComment);
+
+        // 페이지 로드 시 댓글 관련 초기화
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkLoginAndShowCommentForm();
+            await loadComments();
         });
     </script>
 </body>

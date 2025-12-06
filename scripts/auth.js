@@ -66,6 +66,20 @@ async function handleGitHubLogin() {
     }
 }
 
+// 네이버 로그인
+async function handleNaverLogin() {
+    alert('네이버 로그인은 준비 중입니다.\n\nSupabase에서 네이버 OAuth를 설정해야 합니다.\n자세한 내용은 개발자에게 문의하세요.');
+    // TODO: 네이버 개발자 센터에서 애플리케이션 등록 후 구현
+    // https://developers.naver.com/apps/#/register
+}
+
+// 카카오 로그인
+async function handleKakaoLogin() {
+    alert('카카오 로그인은 준비 중입니다.\n\nSupabase에서 카카오 OAuth를 설정해야 합니다.\n자세한 내용은 개발자에게 문의하세요.');
+    // TODO: 카카오 개발자 센터에서 애플리케이션 등록 후 구현
+    // https://developers.kakao.com/console/app
+}
+
 // 회원가입 모달 열기/닫기
 function openSignupModal() {
     document.getElementById('signupModal').style.display = 'flex';
